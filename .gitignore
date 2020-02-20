@@ -127,3 +127,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Toy data for testing ResNet50
+hymenoptera_data/
