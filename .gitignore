@@ -130,3 +130,5 @@ dmypy.json
 
 # Toy data for testing ResNet50
 hymenoptera_data/
+Dataset/
+data/
