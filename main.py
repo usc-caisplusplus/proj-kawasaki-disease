@@ -1,8 +1,63 @@
-from models.jessie.first import main as jessie
-from models.matt.first import main as matt
+import torch
+from PIL import Image
+from models.jessie.first import main, build, test_transforms
+# from models.matt.first import main, build, test_transforms
 
-# jessie('dataset/lips', 'models/jessie/lip.pt')
-matt('dataset/lips', 'models/matt/lip.pt')
+dir = 'dataset/lips'
+model_name = 'models/jessie/lip.pt'
+
+"""TRAINING"""
+# main(dir, model_name)
+
+"""TESTING"""
+def load_image(path):
+    image = Image.open(path)
+    # discard the transparent, alpha channel (that's the :3) and add the batch dimension
+    image = test_transforms(image)[:3, :, :].unsqueeze(0)
+    return image
+
+def predict(path, model):
+    image = load_image(path)
+    model = model.cpu()
+    model.eval()
+    return torch.argmax(model(image))
+
+model, device, criterion, optimizer = build()
+model.load_state_dict(torch.load(model_name))
+
+
+from glob import glob
+
+class_names = ['no', 'yes']
+img_dir = 'image_jessie/dataset_tongue'
+notkawa = np.array(glob(img_dir + "/no/*"))
+kawa = np.array(glob(img_dir + "/yes/*"))
+
+# color green means the model predicted correctly
+# range can be chosen arbitrarily as long as it stays in bound
+for i in range(15, 105, 30):
+    img_path = notkawa[i]
+    img = Image.open(img_path)
+    if predict_kawasaki(model, class_names, img_path) == 'no':
+        print(colored('Not Kawasaki', 'green'))
+    else:
+        print(colored('Kawasaki', 'red'))
+    plt.imshow(img)
+    plt.show()
+
+print("------------------------------------------------------")
+
+for i in range(13, 103, 30):
+    img_path = kawa[i]
+    img = Image.open(img_path)
+    if predict_kawasaki(model, class_names, img_path) == 'yes':
+        print(colored('Kawasaki', 'green'))
+    else:
+        print(colored('Not Kawasaki', 'red'))
+    plt.imshow(img)
+    plt.show()
+
+
 
 # TODO!!
 # https://discuss.pytorch.org/t/balanced-sampling-between-classes-with-torchvision-dataloader/2703/2

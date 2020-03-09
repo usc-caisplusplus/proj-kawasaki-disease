@@ -32,6 +32,32 @@ validation_transforms = transforms.Compose([
 ])
 
 
+def build():
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = models.densenet121(pretrained=True)
+
+    # Freeze model parameters
+    for param in model.parameters():
+        param.requires_grad = False
+
+    fc = nn.Sequential(
+        nn.Linear(1024, 460),
+        nn.ReLU(),
+        nn.Dropout(0.4),
+
+        nn.Linear(460, 2),
+        nn.LogSoftmax(dim=1)
+    )
+    model.classifier = fc
+
+    criterion = nn.NLLLoss()
+    optimizer = torch.optim.Adam(model.classifier.parameters(), lr=0.003)
+
+    model.to(device)
+
+    return model, device, criterion, optimizer
+
+
 def main(image_dir, out_path):
     dataset = datasets.ImageFolder(image_dir, transform=train_transforms)
     size_train = len(dataset)
@@ -56,27 +82,7 @@ def main(image_dir, out_path):
     loader_test = DataLoader(dataset, batch_size=32, sampler=sampler_test, num_workers=0)
     loader_valid = DataLoader(dataset, batch_size=32, sampler=sampler_valid, num_workers=0)
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = models.densenet121(pretrained=True)
-
-    # Freeze model parameters
-    for param in model.parameters():
-        param.requires_grad = False
-
-    fc = nn.Sequential(
-        nn.Linear(1024, 460),
-        nn.ReLU(),
-        nn.Dropout(0.4),
-
-        nn.Linear(460, 2),
-        nn.LogSoftmax(dim=1)
-    )
-    model.classifier = fc
-
-    criterion = nn.NLLLoss()
-    optimizer = torch.optim.Adam(model.classifier.parameters(), lr=0.003)
-
-    model.to(device)
+    model, device, criterion, optimizer = build()
 
     """TRAINING------------------------------------------------------------------"""
     epochs = 10
