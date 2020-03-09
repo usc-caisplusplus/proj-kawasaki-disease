@@ -1,8 +1,8 @@
-from models.jessie.first import main as jessie
+from models.jessie.first import train_eval_loop as jessie
 from models.matt.first import main as matt
 
-# jessie('dataset/lips', 'models/jessie/lip.pt')
-matt('dataset/lips', 'models/matt/lip.pt')
+jessie('dataset/lips', 'models/jessie/lip.pt')
+# matt('dataset/lips', 'models/matt/lip.pt')
 
 # TODO!!
 # https://discuss.pytorch.org/t/balanced-sampling-between-classes-with-torchvision-dataloader/2703/2
