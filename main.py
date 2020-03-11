@@ -1,13 +1,15 @@
 import torch
 from PIL import Image
+from glob import glob
+import numpy as np
 from models.jessie.first import main, build, test_transforms
 # from models.matt.first import main, build, test_transforms
 
-dir = 'dataset/lips'
-model_name = 'models/jessie/lip.pt'
+dir = 'dataset/eyes'
+model_name = 'models/jessie/eye.pt'
 
 """TRAINING"""
-# main(dir, model_name)
+main(dir, model_name)
 
 """TESTING"""
 def load_image(path):
@@ -25,38 +27,34 @@ def predict(path, model):
 model, device, criterion, optimizer = build()
 model.load_state_dict(torch.load(model_name))
 
+pos = np.array(glob(dir + '/yes/*'))
+neg = np.array(glob(dir + '/no/*'))
 
-from glob import glob
+true_pos = 0
+false_neg = 0
 
-class_names = ['no', 'yes']
-img_dir = 'image_jessie/dataset_tongue'
-notkawa = np.array(glob(img_dir + "/no/*"))
-kawa = np.array(glob(img_dir + "/yes/*"))
-
-# color green means the model predicted correctly
-# range can be chosen arbitrarily as long as it stays in bound
-for i in range(15, 105, 30):
-    img_path = notkawa[i]
-    img = Image.open(img_path)
-    if predict_kawasaki(model, class_names, img_path) == 'no':
-        print(colored('Not Kawasaki', 'green'))
+for i in range(pos.shape[0]):
+    path = pos[i]
+    pred = predict(path, model)
+    if pred == 1:
+        true_pos += 1
     else:
-        print(colored('Kawasaki', 'red'))
-    plt.imshow(img)
-    plt.show()
+        false_neg += 1
 
-print("------------------------------------------------------")
+print('True Positives: {}\tFalse Negatives: {}'.format(true_pos, false_neg))
 
-for i in range(13, 103, 30):
-    img_path = kawa[i]
-    img = Image.open(img_path)
-    if predict_kawasaki(model, class_names, img_path) == 'yes':
-        print(colored('Kawasaki', 'green'))
+true_neg = 0
+false_pos = 0
+
+for i in range(neg.shape[0]):
+    path = neg[i]
+    pred = predict(path, model)
+    if pred == 1:
+        false_pos += 1
     else:
-        print(colored('Not Kawasaki', 'red'))
-    plt.imshow(img)
-    plt.show()
+        true_neg += 1
 
+print('False Positives: {}\tTrue Negatives: {}'.format(false_pos, true_neg))
 
 
 # TODO!!

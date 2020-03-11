@@ -17,6 +17,25 @@ train_transforms = transforms.Compose([
 test_transforms = train_transforms
 validation_transforms = train_transforms
 
+
+def build():
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = models.resnet18(pretrained=True)
+
+    # Freeze model parameters
+    for param in model.parameters():
+        param.requires_grad = False
+
+    model.fc = nn.Linear(model.fc.in_features, 2)
+
+    criterion = nn.CrossEntropyLoss()
+    optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
+    # exp_lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
+
+    model.to(device)
+
+    return model, device, criterion, optimizer
+
 def main(image_dir, out_path):
     dataset = datasets.ImageFolder(image_dir, transform=train_transforms)
     size_train = len(dataset)
@@ -41,20 +60,7 @@ def main(image_dir, out_path):
     loader_test = DataLoader(dataset, batch_size=4, sampler=sampler_test, num_workers=0)
     loader_valid = DataLoader(dataset, batch_size=4, sampler=sampler_valid, num_workers=0)
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = models.resnet18(pretrained=True)
-
-    # Freeze model parameters
-    for param in model.parameters():
-        param.requires_grad = False
-
-    model.fc = nn.Linear(model.fc.in_features, 2)
-
-    criterion = nn.CrossEntropyLoss()
-    optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
-    # exp_lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
-
-    model.to(device)
+    model, device, criterion, optimizer = build()
 
     """TRAINING------------------------------------------------------------------"""
     epochs = 25
