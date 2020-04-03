@@ -4,9 +4,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torchvision import datasets, transforms, models
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, random_split
 from torch.utils.data.sampler import SubsetRandomSampler
-
 
 train_transforms = transforms.Compose([
     transforms.Resize(256),
@@ -17,6 +16,20 @@ train_transforms = transforms.Compose([
 test_transforms = train_transforms
 validation_transforms = train_transforms
 
+def make_weights_for_balanced_classes(dataset, indices):
+    nclasses = len(dataset.classes)
+    images = [dataset[i] for i in indices]
+    count = [0] * nclasses
+    for item in images:
+        count[item[1]] += 1
+    weight_per_class = [0.] * nclasses
+    N = float(sum(count))
+    for i in range(nclasses):
+        weight_per_class[i] = N/float(count[i])
+    weight = [0] * len(images)
+    for idx, val in enumerate(images):
+        weight[idx] = weight_per_class[val[1]]
+    return weight
 
 def build():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -38,27 +51,20 @@ def build():
 
 def main(image_dir, out_path):
     dataset = datasets.ImageFolder(image_dir, transform=train_transforms)
-    size_train = len(dataset)
-    size_test = 0.1
-    size_valid = 0.2
 
-    split_test = int(np.floor((size_test + size_valid) * size_train))
-    split_valid = int(np.floor(size_valid * size_train))
+    valid_pct = 0.2
 
-    indices = list(range(size_train))
-    np.random.shuffle(indices)
+    train_size = int(np.floor(len(dataset) * (1-valid_pct)))
+    valid_size = len(dataset) - train_size
 
-    idx_train = indices[split_test:]
-    idx_test = indices[split_valid:split_test]
-    idx_valid = indices[:split_valid]
+    train_dataset, valid_dataset = random_split(dataset, [train_size, valid_size])
 
-    sampler_train = SubsetRandomSampler(idx_train)
-    sampler_test = SubsetRandomSampler(idx_test)
-    sampler_valid = SubsetRandomSampler(idx_valid)
+    weights = make_weights_for_balanced_classes(dataset, train_dataset.indices)
+    weights = torch.DoubleTensor(weights)
+    sampler = torch.utils.data.sampler.WeightedRandomSampler(weights, len(weights))
 
-    loader_train = DataLoader(dataset, batch_size=4, sampler=sampler_train, num_workers=0)
-    loader_test = DataLoader(dataset, batch_size=4, sampler=sampler_test, num_workers=0)
-    loader_valid = DataLoader(dataset, batch_size=4, sampler=sampler_valid, num_workers=0)
+    loader_train = DataLoader(train_dataset, batch_size=4, sampler=sampler, num_workers=0)
+    loader_valid = DataLoader(valid_dataset, batch_size=4, num_workers=0, shuffle=True)
 
     model, device, criterion, optimizer = build()
 
