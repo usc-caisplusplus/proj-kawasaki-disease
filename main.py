@@ -2,14 +2,14 @@ import torch
 from PIL import Image
 from glob import glob
 import numpy as np
-from models.jessie.first import main, build, test_transforms
-# from models.matt.first import main, build, test_transforms
+# from models.jessie.first import main, build, test_transforms
+from models.matt.first import main, build, test_transforms
 
 dir = 'dataset/eyes'
-model_name = 'models/jessie/eye.pt'
+model_name = 'models/matt/eye.pt'
 
-"""TRAINING"""
-main(dir, model_name)
+# """TRAINING"""
+# main(dir, model_name)
 
 """TESTING"""
 def load_image(path):
@@ -55,6 +55,8 @@ for i in range(neg.shape[0]):
         true_neg += 1
 
 print('False Positives: {}\tTrue Negatives: {}'.format(false_pos, true_neg))
+
+print('Sensitivity: {}\tSpecificity: {}'.format(true_pos / (true_pos + false_neg), true_neg / (true_neg + false_pos)))
 
 
 # TODO!!
