@@ -69,7 +69,7 @@ def main(image_dir, out_path):
     model, device, criterion, optimizer = build()
 
     """TRAINING------------------------------------------------------------------"""
-    epochs = 25
+    epochs = 10
     min_validation_loss = np.Inf
     for epoch in range(epochs):
         model.train()

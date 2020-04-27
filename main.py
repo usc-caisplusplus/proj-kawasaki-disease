@@ -5,11 +5,11 @@ import numpy as np
 # from models.jessie.first import main, build, test_transforms
 from models.matt.second import main, build, test_transforms
 
-dir = 'dataset/eyes'
-model_name = 'models/matt/eye.pt'
+dir = 'dataset/skin'
+model_name = 'models/matt/skin.pt'
 
-# """TRAINING"""
-# main(dir, model_name)
+"""TRAINING"""
+main(dir, model_name)
 
 """TESTING"""
 def load_image(path):
