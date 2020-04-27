@@ -2,11 +2,11 @@ import torch
 from PIL import Image
 from glob import glob
 import numpy as np
-# from models.jessie.first import main, build, test_transforms
-from models.matt.second import main, build, test_transforms
+from models.jessie.first import main, build, test_transforms
+# from models.matt.second import main, build, test_transforms
 
-dir = 'dataset/skin'
-model_name = 'models/matt/skin.pt'
+dir = 'dataset/tongues'
+model_name = 'models/jessie/tongue.pt'
 
 """TRAINING"""
 main(dir, model_name)
