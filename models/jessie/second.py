@@ -95,7 +95,7 @@ def main(image_dir, out_path):
     model, device, criterion, optimizer = build(neg_datasize, pos_datasize)
 
     """TRAINING------------------------------------------------------------------"""
-    epochs = 20
+    epochs = 10
     min_validation_loss = np.Inf
     for epoch in range(epochs):
         model.train()

@@ -1,42 +1,42 @@
 LIPS
 (Test)
-93% Accuracy
+94% Accuracy
 (Train and Test)
-True Positives: 186     False Negatives: 10
-False Positives: 30     True Negatives: 106
+True Positives: 182     False Negatives: 14
+False Positives: 21     True Negatives: 115
 
-Sensitivity: 94.90%
-Specificity: 77.94%
+Sensitivity: 92.86%
+Specificity: 84.56%
 
 
 TONGUES
 (Test)
-86% Accuracy
+91% Accuracy
 (Train and Test)
-True Positives: 211     False Negatives: 14
-False Positives: 61     True Negatives: 231
+True Positives: 194     False Negatives: 31
+False Positives: 30     True Negatives: 262
 
-Sensitivity: 93.78%
-Specificity: 79.11%
+Sensitivity: 86.22%
+Specificity: 89.73%
 
 
 EYES
 (Test)
-92% Accuracy
+86% Accuracy
 (Train and Test)
-True Positives: 15      False Negatives: 16
-False Positives: 1      True Negatives: 204
+True Positives: 24      False Negatives: 7
+False Positives: 24     True Negatives: 181
 
-Sensitivity: 48.39%
-Specificity: 99.51%
+Sensitivity: 77.42%
+Specificity: 88.29%
 
 
 SKIN
 (Test)
 91% Accuracy
 (Train and Test)
-True Positives: 234     False Negatives: 32
-False Positives: 18     True Negatives: 409
+True Positives: 253     False Negatives: 13
+False Positives: 93     True Negatives: 334
 
-Sensitivity: 87.97%
-Specificity: 95.78%
+Sensitivity: 95.11%
+Specificity: 78.22%

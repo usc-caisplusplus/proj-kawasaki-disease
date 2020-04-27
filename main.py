@@ -2,11 +2,11 @@ import torch
 from PIL import Image
 from glob import glob
 import numpy as np
-from models.jessie.first import main, build, test_transforms
+from models.jessie.second import main, build, test_transforms
 # from models.matt.second import main, build, test_transforms
 
-dir = 'dataset/tongues'
-model_name = 'models/jessie/tongue.pt'
+dir = 'dataset/lips'
+model_name = 'models/jessie/lip.pt'
 
 """TRAINING"""
 main(dir, model_name)
@@ -24,11 +24,13 @@ def predict(path, model):
     model.eval()
     return torch.argmax(model(image))
 
-model, device, criterion, optimizer = build()
-model.load_state_dict(torch.load(model_name))
-
 pos = np.array(glob(dir + '/yes/*'))
 neg = np.array(glob(dir + '/no/*'))
+
+model, device, criterion, optimizer = build(neg.shape[0], pos.shape[0])
+model.load_state_dict(torch.load(model_name))
+
+
 
 true_pos = 0
 false_neg = 0
