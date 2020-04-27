@@ -3,7 +3,7 @@ from PIL import Image
 from glob import glob
 import numpy as np
 # from models.jessie.first import main, build, test_transforms
-from models.matt.first import main, build, test_transforms
+from models.matt.second import main, build, test_transforms
 
 dir = 'dataset/eyes'
 model_name = 'models/matt/eye.pt'
